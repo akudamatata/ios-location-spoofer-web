@@ -648,14 +648,17 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter','SF Pro Dis
   <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
 </button>
 <div id="layer-menu">
-  <div class="layer-item active" data-layer="amap" id="layer-amap">
+  <div class="layer-item" data-layer="amap" id="layer-amap">
     高德地图<span class="check">✓</span>
   </div>
   <div class="layer-item" data-layer="sat" id="layer-sat">
     高德卫星<span class="check">✓</span>
   </div>
-  <div class="layer-item" data-layer="osm" id="layer-osm">
+  <div class="layer-item active" data-layer="osm" id="layer-osm">
     国际地图<span class="check">✓</span>
+  </div>
+  <div class="layer-item" data-layer="esri" id="layer-esri">
+    国际卫星<span class="check">✓</span>
   </div>
 </div>
 
@@ -784,8 +787,8 @@ var GCJ = (function(){
 })();
 
 /* ─── State ──────────────────────────────────────────────── */
-var map, currentLayer='amap';
-var WGS={lat:37.3349,lng:-122.00902}; // current center in WGS-84
+var map, currentLayer='osm';
+var WGS={lat:39.90872,lng:116.39748}; // current center in WGS-84
 var lockedWGS=null;                   // last saved to server
 var altitude=null,hacc=39,vacc=1000;
 var altFetchTimer=null;
@@ -862,7 +865,7 @@ function scheduleElevation(){
 /* ─── Map center → WGS-84 ────────────────────────────────── */
 function onMapMove(){
   var c=map.getCenter();
-  var w=currentLayer==='osm'?[c.lat,c.lng]:GCJ.g2w(c.lat,c.lng);
+  var w=(currentLayer==='osm'||currentLayer==='esri')?[c.lat,c.lng]:GCJ.g2w(c.lat,c.lng);
   WGS={lat:w[0],lng:w[1]};
   updateBubble();
   updateStatus();
@@ -882,16 +885,19 @@ function buildLayers(){
   layers.osm=L.tileLayer(
     'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
     {maxZoom:20,attribution:'© OpenStreetMap contributors, © CartoDB'});
+  layers.esri=L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    {maxZoom:19,attribution:'Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'});
 }
 
 function initMap(lat,lng){
   var dispLat,dispLng;
-  if(currentLayer==='osm'){dispLat=lat;dispLng=lng;}
+  if(currentLayer==='osm'||currentLayer==='esri'){dispLat=lat;dispLng=lng;}
   else{var g=GCJ.w2g(lat,lng);dispLat=g[0];dispLng=g[1];}
 
   map=L.map('map',{zoomControl:false,attributionControl:true});
   buildLayers();
-  layers.amap.addTo(map);
+  layers.osm.addTo(map);
   map.setView([dispLat,dispLng],13);
   map.on('move',onMapMove);
   map.on('moveend',onMapMove);
@@ -906,8 +912,8 @@ function switchLayer(name){
   if(name===currentLayer)return;
   var c=map.getCenter();
   // Convert current display coords → WGS-84 → new display coords
-  var wgs=currentLayer==='osm'?[c.lat,c.lng]:GCJ.g2w(c.lat,c.lng);
-  var newDisp=name==='osm'?wgs:GCJ.w2g(wgs[0],wgs[1]);
+  var wgs=(currentLayer==='osm'||currentLayer==='esri')?[c.lat,c.lng]:GCJ.g2w(c.lat,c.lng);
+  var newDisp=(name==='osm'||name==='esri')?wgs:GCJ.w2g(wgs[0],wgs[1]);
 
   map.removeLayer(layers[currentLayer]);
   currentLayer=name;
@@ -948,7 +954,7 @@ function doSearch(){
           row.innerHTML='<div class="name">'+escHtml(it.name)+'</div>'
                        +'<div class="sub">'+escHtml((it.district || '') + (it.address || ''))+'</div>';
           row.addEventListener('click',function(){
-            var disp = currentLayer === 'osm' ? GCJ.g2w(gcjLat, gcjLng) : [gcjLat, gcjLng];
+            var disp = (currentLayer === 'osm'||currentLayer === 'esri') ? GCJ.g2w(gcjLat, gcjLng) : [gcjLat, gcjLng];
             map.setView([disp[0], disp[1]], 16, {animate:true});
             box.style.display='none';
             $id('search-input').value='';
@@ -977,7 +983,7 @@ function doSearch(){
                        +'<div class="sub">'+parts.slice(1,3).join(',')+'</div>';
           row.addEventListener('click',function(){
             var wLat=+it.lat,wLng=+it.lon;
-            var disp=currentLayer==='osm'?[wLat,wLng]:GCJ.w2g(wLat,wLng);
+            var disp=(currentLayer==='osm'||currentLayer==='esri')?[wLat,wLng]:GCJ.w2g(wLat,wLng);
             map.setView([disp[0], disp[1]], 16, {animate:true});
             box.style.display='none';
             $id('search-input').value='';
@@ -1146,7 +1152,7 @@ $id('btn-locate').addEventListener('click', function(e){
     navigator.geolocation.getCurrentPosition(function(pos) {
       var lat = pos.coords.latitude;
       var lng = pos.coords.longitude;
-      var disp = currentLayer === 'osm' ? [lat, lng] : GCJ.w2g(lat, lng);
+      var disp = (currentLayer === 'osm'||currentLayer === 'esri') ? [lat, lng] : GCJ.w2g(lat, lng);
       map.setView([disp[0], disp[1]], 16, {animate: true});
       toast('已定位到当前真实位置');
     }, function(err) {
