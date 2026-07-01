@@ -782,7 +782,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter','SF Pro Dis
   <div class="layer-item" data-layer="sat" id="layer-sat">
     高德卫星<span class="check">✓</span>
   </div>
-  <div class="layer-item active" data-layer="osm" id="layer-osm">
+  <div class="layer-item" data-layer="osm" id="layer-osm">
     国际地图<span class="check">✓</span>
   </div>
   <div class="layer-item" data-layer="esri" id="layer-esri">
@@ -1068,6 +1068,11 @@ function initMap(lat,lng){
   map.setView([dispLat,dispLng],13);
   map.on('move',onMapMove);
   map.on('moveend',onMapMove);
+
+  // Sync layer checkmark to currentLayer
+  document.querySelectorAll('.layer-item').forEach(function(el){
+    el.classList.toggle('active', el.dataset.layer===currentLayer);
+  });
 
   // Zoom buttons
   $id('btn-zoom-in').addEventListener('click',function(){map.zoomIn();});
