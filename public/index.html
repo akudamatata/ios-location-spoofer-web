@@ -1064,7 +1064,7 @@ function initMap(lat,lng){
 
   map=L.map('map',{zoomControl:false,attributionControl:true});
   buildLayers();
-  layers.osm.addTo(map);
+  layers[currentLayer].addTo(map);
   map.setView([dispLat,dispLng],13);
   map.on('move',onMapMove);
   map.on('moveend',onMapMove);
