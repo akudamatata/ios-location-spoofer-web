@@ -4,6 +4,11 @@ on:
   push:
     branches: [ "main" ]
 
+# Grant permissions to write packages in GitHub Container Registry (GHCR)
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -11,15 +16,25 @@ jobs:
     - name: Check out the repo
       uses: actions/checkout@v4
 
+    # 1. Log in to Docker Hub (using secrets)
     - name: Log in to Docker Hub
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+    # 2. Log in to GitHub Container Registry (automatic authorization)
+    - name: Log in to GitHub Packages (GHCR)
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
+    # 3. Build and push to BOTH registries
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
@@ -27,6 +42,7 @@ jobs:
         push: true
         tags: |
           ${{ secrets.DOCKERHUB_USERNAME }}/ios-location-spoofer-web:latest
-          ${{ secrets.DOCKERHUB_USERNAME }}/ios-location-spoofer-web:${{ github.sha }}
+          ghcr.io/${{ github.repository }}:latest
+          ghcr.io/${{ github.repository }}:${{ github.sha }}
         cache-from: type=gha
         cache-to: type=gha,mode=max

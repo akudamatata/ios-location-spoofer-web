@@ -1,6 +1,6 @@
 services:
   gps-spoofer:
-    image: akudamatata/ios-location-spoofer-web:latest
+    image: ghcr.io/akudamatata/ios-location-spoofer-web:latest
     container_name: gps-spoofer
     restart: unless-stopped
     ports:

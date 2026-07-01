@@ -19,16 +19,40 @@
 
 ## 🛠 快速部署
 
-### 1. 启动 Docker 服务
-在您的服务器上克隆仓库并使用 Docker Compose 启动：
+### 1. 快速启动（Docker Compose）
 
+如果您不想克隆整个代码仓库，只需在服务器新建一个目录，并在其中创建以下两个文件即可直接启动：
+
+#### 文件一：`docker-compose.yml`
+```yaml
+services:
+  gps-spoofer:
+    image: ghcr.io/akudamatata/ios-location-spoofer-web:latest
+    container_name: gps-spoofer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/data
+    environment:
+      - PORT=8080
+      - TOKEN=${TOKEN}
+      - AMAP_KEY=${AMAP_KEY}
+      - DATA_DIR=/data
+```
+
+#### 文件二：`.env`
+```ini
+# 网页访问与 Shadowrocket 提取坐标时所使用的安全密码（必填）
+TOKEN=your_secret_token_here
+
+# 高德地图 Web 服务 Key（用于高精度国内地点搜索，可选但强烈推荐）
+AMAP_KEY=your_amap_web_service_key_here
+```
+
+配置好上述两个文件后，直接在当前目录执行以下命令启动：
 ```bash
-# 克隆仓库
-git clone https://github.com/akudamatata/ios-location-spoofer-web.git
-cd ios-location-spoofer-web
-
-# 从模板创建配置文件
-cp .env.example .env
+docker compose up -d
 ```
 
 编辑 `.env` 配置文件：
