@@ -616,7 +616,9 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter','SF Pro Dis
     <div class="coords" id="bubble-coords">---, ---</div>
     <div class="alt" id="bubble-alt">海拔 — m</div>
   </div>
-  <button id="bubble-fav-btn" aria-label="收藏当前位置">⭐</button>
+  <button id="bubble-fav-btn" aria-label="收藏当前位置">
+    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="color: #FFB800;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+  </button>
 </div>
 
 <!-- Top search bar -->
@@ -633,21 +635,23 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter','SF Pro Dis
 
 <!-- Left: Favorites button -->
 <button id="fav-btn" aria-label="收藏夹">
-  ⭐
+  <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="color: #FFB800;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
   <span id="fav-badge">0</span>
 </button>
 
 <!-- Right: Layer switcher -->
-<button id="layer-btn" aria-label="切换地图">🗺</button>
+<button id="layer-btn" aria-label="切换地图">
+  <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+</button>
 <div id="layer-menu">
   <div class="layer-item active" data-layer="amap" id="layer-amap">
-    <span>🏙</span>高德地图<span class="check">✓</span>
+    高德地图<span class="check">✓</span>
   </div>
   <div class="layer-item" data-layer="sat" id="layer-sat">
-    <span>🛰</span>高德卫星<span class="check">✓</span>
+    高德卫星<span class="check">✓</span>
   </div>
   <div class="layer-item" data-layer="osm" id="layer-osm">
-    <span>🌍</span>国际地图<span class="check">✓</span>
+    国际地图<span class="check">✓</span>
   </div>
 </div>
 
@@ -655,18 +659,22 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter','SF Pro Dis
 <div id="zoom-controls">
   <button class="zoom-btn" id="btn-zoom-in">+</button>
   <button class="zoom-btn" id="btn-zoom-out">−</button>
-  <button class="zoom-btn" id="btn-locate" style="font-size:18px;" aria-label="定位当前位置">🎯</button>
+  <button class="zoom-btn" id="btn-locate" aria-label="定位当前位置">
+    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line></svg>
+  </button>
 </div>
 
 <!-- Favorites panel -->
 <div id="fav-panel">
   <div id="fav-panel-header">
     <h2>收藏夹</h2>
-    <button id="fav-close">✕</button>
+    <button id="fav-close" aria-label="关闭">
+      <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
   </div>
   <div id="fav-list">
     <div id="fav-empty">
-      <span class="emoji">⭐</span>
+      <svg viewBox="0 0 24 24" width="40" height="40" stroke="#8E8E93" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 12px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
       暂无收藏<br>锁定位置后点「收藏」即可保存
     </div>
   </div>
@@ -702,7 +710,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter','SF Pro Dis
       <span id="status-text">点击地图选择位置</span>
     </div>
     <button id="btn-lock">
-      <span id="btn-lock-icon">📍</span>
+      <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
       <span id="btn-lock-label">锁定</span>
     </button>
   </div>
@@ -1030,12 +1038,16 @@ function renderFavorites(){
   favorites.forEach(function(f){
     var item=document.createElement('div');item.className='fav-item';
     item.innerHTML=
-      '<div class="fav-icon">📍</div>'
+      '<div class="fav-icon">'
+        +'<svg viewBox="0 0 24 24" width="20" height="20" stroke="#007AFF" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>'
+      +'</div>'
       +'<div class="fav-info">'
         +'<div class="fav-name">'+escHtml(f.name)+'</div>'
         +'<div class="fav-coords">'+f.latitude.toFixed(5)+', '+f.longitude.toFixed(5)+'</div>'
       +'</div>'
-      +'<button class="fav-del" data-id="'+f.id+'">🗑</button>';
+      +'<button class="fav-del" data-id="'+f.id+'">'
+        +'<svg viewBox="0 0 24 24" width="16" height="16" stroke="#FF453A" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>'
+      +'</button>';
 
     // Jump to location on tap
     item.addEventListener('click',function(e){
