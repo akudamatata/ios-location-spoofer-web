@@ -954,7 +954,7 @@ var GCJ = (function(){
 })();
 
 /* ─── State ──────────────────────────────────────────────── */
-var map, currentLayer='osm';
+var map, currentLayer=(AMAP_KEY?'amap':'osm');
 var WGS={lat:39.90872,lng:116.39748}; // current center in WGS-84
 var lockedWGS=null;                   // last saved to server
 var altitude=null,hacc=39,vacc=1000;
