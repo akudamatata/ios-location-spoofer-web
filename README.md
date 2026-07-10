@@ -16,76 +16,43 @@
 | 🔒 | **完全自建托管** | 内置 `location-spoofer.js`，无需依赖 GitHub Raw 链接 |
 | ⭐ | **收藏夹** | 毛玻璃面板，保存常用地点，一键直达 |
 | 🔢 | **高级参数** | 可调节海拔、水平精度、垂直精度（支持地形高度自动获取）|
-| 🐳 | **极简部署** | 纯 Node.js 内置模块，零第三方依赖，Docker 一键拉起 |
+| 🐳 | **极简部署** | Cloudflare Pages 全局边缘节点 Serverless 部署，零服务器维护成本 |
 
 ---
 
-## 🛠 快速部署
+## 🛠 快速部署 (Cloudflare Pages)
 
-在您的服务器上新建一个空目录，创建一个 `docker-compose.yml` 文件即可启动（**无需克隆整个代码仓库**）。
+本项目已重构为原生支持 **Cloudflare Pages** 部署，实现 **全球加速、零维护、完全免费**。
 
-### 1. 创建 `docker-compose.yml`
+### 1. 准备工作
+- 注册并登录 [Cloudflare](https://dash.cloudflare.com/) 账号。
+- 在 Cloudflare Dashboard 左侧菜单找到 **Workers & Pages** -> **KV**。
+- 创建一个新的 KV 命名空间，命名为 `SPOOFER_DATA`。
 
-将以下内容复制粘贴，填入您的 Token 和高德 Key：
+### 2. Fork 仓库
+点击右上角的 Fork，将本仓库 Fork 到您的 GitHub 账号下。
 
-```yaml
-services:
-  gps-spoofer:
-    image: ghcr.io/akudamatata/ios-location-spoofer-web:latest
-    container_name: gps-spoofer
-    restart: unless-stopped
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./data:/data
-    environment:
-      - PORT=8080
-      - DATA_DIR=/data
+### 3. 创建 Pages 项目
+1. 在 Cloudflare Dashboard 进入 **Workers & Pages** -> **Overview**，点击 **Create application** -> **Pages** -> **Connect to Git**。
+2. 授权连接您的 GitHub，选择您 Fork 的仓库。
+3. 在构建设置 (Build settings) 页面：
+   - **Framework preset**: `None`
+   - **Build command**: (留空)
+   - **Build output directory**: `public`
+4. 展开 **Environment variables (advanced)**，添加以下变量：
+   - `TOKEN`: 您的安全密码（必填，用于网页访问与 Shadowrocket 提取坐标）
+   - `AMAP_KEY`: 您的高德地图 Web 服务 Key（用于高精度国内地名搜索，可选但强烈推荐）
+5. 点击 **Save and Deploy**（保存并部署）。首次部署可能会因为没有绑定 KV 而出现数据保存报错，请继续下一步。
 
-      # 网页访问与 Shadowrocket 提取坐标时所使用的安全密码（必填）
-      - TOKEN=您的安全密码
+### 4. 绑定 KV 命名空间
+1. 部署完成后，进入该 Pages 项目的详情页，点击顶部的 **Settings** -> **Functions**。
+2. 往下滚动找到 **KV namespace bindings**。
+3. 点击 **Add binding**：
+   - **Variable name** 填入 `SPOOFER_DATA`。
+   - **KV namespace** 选择您在第一步创建的 `SPOOFER_DATA`。
+4. 重新部署一次（在项目概览页点击最近一次部署的旁边的 "..." -> "Retry deployment"）即可生效。
 
-      # 高德地图 Web 服务 Key（用于高精度国内地名搜索，可选但强烈推荐）
-      - AMAP_KEY=您的高德WebServiceKey
-```
-
-### 2. 启动容器
-
-```bash
-# 拉取最新镜像并启动
-docker compose pull
-docker compose up -d
-```
-
-启动后服务监听在 `8080` 端口。
-
-### 3. 配置 Nginx HTTPS 反代
-
-Shadowrocket 要求 HTTPS，配置示例：
-
-```nginx
-server {
-    listen 80;
-    server_name gps.yourdomain.com;
-    return 301 https://$host$request_uri;
-}
-
-server {
-    listen 443 ssl;
-    server_name gps.yourdomain.com;
-
-    ssl_certificate /path/to/your/cert.crt;
-    ssl_certificate_key /path/to/your/cert.key;
-
-    location / {
-        proxy_pass http://127.0.0.1:8080;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-```
+部署完成后，您将获得一个类似 `https://your-project.pages.dev` 的免费域名，可以直接通过该域名访问管理面板！
 
 ---
 
