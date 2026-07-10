@@ -1,9 +1,0 @@
-name = "ios-location-spoofer-web"
-compatibility_date = "2024-03-20"
-pages_build_output_dir = "public"
-
-[vars]
-# Configure these variables in your Cloudflare Pages dashboard for production.
-# TOKEN = "your-secure-token"
-# AMAP_KEY = "your-amap-web-js-api-key"
-
