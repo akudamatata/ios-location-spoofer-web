@@ -38,7 +38,7 @@
 3. 授权连接您的 GitHub，选择您刚才 Fork 的仓库。
 4. 在构建设置 (Build settings) 页面：
    - **Framework preset** (框架预设): 选择 `None`
-   - **Build command** (构建命令): **留空**（必须为空）
+   - **Build command** (构建命令): 填写 `exit 0`
    - **Build output directory** (构建输出目录): 填写 `public`
 5. 展开 **Environment variables (advanced)** (环境变量)，添加以下变量：
    - `TOKEN`: 您的安全密码（必填，用于网页访问与 Shadowrocket 提取坐标）
