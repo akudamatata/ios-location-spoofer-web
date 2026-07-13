@@ -486,6 +486,24 @@ html.dark #search-history {
   border-radius:var(--r-md);
   overflow:hidden;
   max-height:260px;overflow-y:auto;
+  /* Scrollbar styles for search results */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(150, 150, 150, 0.4) transparent;
+}
+#search-results::-webkit-scrollbar {
+  width: 6px;
+}
+#search-results::-webkit-scrollbar-track {
+  background: transparent;
+}
+#search-results::-webkit-scrollbar-thumb {
+  background: rgba(150, 150, 150, 0.4);
+  border-radius: 6px;
+}
+html.dark #search-results::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+}
+#search-results {
   display:none;
   animation:slideDown .2s cubic-bezier(.34,1.2,.64,1);
 }
@@ -1391,15 +1409,10 @@ $id('search-input').addEventListener('focus', function() {
     $id('search-history').classList.remove('hidden');
   }
 });
-$id('search-input').addEventListener('blur', function() {
-  setTimeout(function() {
-    $id('search-history').classList.add('hidden');
-  }, 200);
-});
-
 document.addEventListener('click',function(e){
   if(!$id('search-bar').contains(e.target)&&!$id('search-results').contains(e.target)){
     $id('search-results').style.display='none';
+    $id('search-history').classList.add('hidden');
   }
 });
 
