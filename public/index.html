@@ -891,15 +891,15 @@ html.dark .config-code-box{background:rgba(0,0,0,0.35);color:var(--text);border-
   </div>
   <div id="config-content">
     <div class="config-section">
-      <div class="config-title">方法 A：一键导入小火箭</div>
-      <div class="config-desc">最推荐的方式。点击下方按钮即可唤醒手机上的 Shadowrocket 自动导入到【配置】或【模块】列表中。</div>
-      <button class="config-action-btn" id="btn-config-import">一键导入配置</button>
+      <div class="config-title">方法 A：一键导入小火箭模块</div>
+      <div class="config-desc">最推荐的方式。点击下方按钮即可唤醒手机上的 Shadowrocket 自动导入到【模块】列表中。</div>
+      <button class="config-action-btn" id="btn-config-import">一键导入模块</button>
     </div>
     <div class="config-section">
-      <div class="config-title">方法 B：手动复制配置链接</div>
-      <div class="config-desc">如果在微信或第三方浏览器无法唤醒，请复制下方完整的配置链接，前往 Shadowrocket 的【配置】页面 -> 点击右上角【+】号 -> 输入或粘贴此 URL 即可。</div>
+      <div class="config-title">方法 B：手动复制模块链接</div>
+      <div class="config-desc">如果在微信或第三方浏览器无法唤醒，请复制下方完整的模块链接，前往 Shadowrocket 的【配置】页面 -> 点击进入【模块】 -> 点击右上角【+】号 -> 粘贴此 URL 下载即可。</div>
       <div class="config-code-box" id="config-url-text">...</div>
-      <button class="config-action-btn" id="btn-config-copy-url">复制配置链接</button>
+      <button class="config-action-btn" id="btn-config-copy-url">复制模块链接</button>
     </div>
     <div class="config-section">
       <div class="config-title">方法 C：一键复制 argument 参数</div>
@@ -1573,7 +1573,7 @@ $id('btn-config-import').addEventListener('click', function() {
 
 $id('btn-config-copy-url').addEventListener('click', function() {
   navigator.clipboard.writeText($id('config-url-text').textContent)
-    .then(function() { toast('配置链接已复制'); })
+    .then(function() { toast('模块链接已复制'); })
     .catch(function() { toast('复制失败，请手动选择复制'); });
 });
 
