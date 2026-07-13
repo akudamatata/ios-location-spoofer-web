@@ -1812,6 +1812,7 @@ handleAuthentication(function(activeToken) {
       $id('inp-vacc').placeholder=vacc;
       if(altitude!==null)$id('inp-alt').placeholder=Math.round(altitude);
       initMap(WGS.lat,WGS.lng);
+      updateLockedPin(lockedWGS.lat, lockedWGS.lng);
       updateBubble();
       updateStatus();
       loadHistory();
@@ -1821,6 +1822,7 @@ handleAuthentication(function(activeToken) {
     .catch(function(){
       // fallback: Beijing
       initMap(39.90872,116.39748);
+      updateLockedPin(39.90872,116.39748);
       updateBubble();
       updateStatus();
       loadHistory();
