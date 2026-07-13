@@ -7,6 +7,16 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1c1c1e" media="(prefers-color-scheme: dark)">
+<script>
+  // In PWA (standalone) mode, remove theme-color so iOS uses black-translucent
+  // This allows the map to render truly edge-to-edge under the status bar.
+  if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+    document.write('<style>#pwa-top-shadow { display: block !important; }</style>');
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('meta[name="theme-color"]').forEach(function(el) { el.remove(); });
+    });
+  }
+</script>
 <title>GPS Spoofer</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icon-512.png">
@@ -246,6 +256,15 @@ html.dark .config-code-box{background:rgba(0,0,0,0.35);color:var(--text);border-
 ═══════════════════════════════════════════════ */
 #map{
   position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;height:-webkit-fill-available;z-index:0;
+}
+#pwa-top-shadow {
+  display: none; /* Only shown in PWA mode via JS */
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: max(env(safe-area-inset-top), 47px);
+  background: linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, transparent 100%);
+  z-index: 10;
+  pointer-events: none;
 }
 .leaflet-control-zoom{display:none}
 .leaflet-control-attribution{
@@ -876,11 +895,21 @@ html.dark #search-results::-webkit-scrollbar-thumb {
 }
 .zoom-btn:active{transform:scale(.92);background:rgba(255,255,255,.9);}
 
+
 </style>
 </head>
 <body>
+<script>
+  if(window.matchMedia('(display-mode: standalone)').matches){
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if(meta) meta.remove();
+  }
+</script>
 
-<!-- Map -->
+<!-- Top shadow for PWA status bar readability -->
+<div id="pwa-top-shadow"></div>
+
+<!-- Search Bar -->
 <div id="map"></div>
 
 <!-- Crosshair -->
