@@ -744,7 +744,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter','SF Pro Dis
     <div class="alt" id="bubble-alt">海拔 — m</div>
   </div>
   <button id="bubble-fav-btn" aria-label="收藏当前位置">
-    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" fill="currentColor" stroke-linecap="round" stroke-linejoin="round" style="color: #FFB800;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+    <svg id="bubble-fav-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="color: #FFB800;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
   </button>
 </div>
 
@@ -1037,6 +1037,7 @@ function onMapMove(){
   updateBubble();
   updateStatus();
   scheduleElevation();
+  updateFavStar();
 }
 
 /* ─── Map setup ──────────────────────────────────────────── */
@@ -1239,8 +1240,21 @@ drawer.addEventListener('touchend',function(e){
 function loadFavorites(){
   fetch(API('/favorites'))
     .then(function(r){return r.json();})
-    .then(function(a){favorites=a||[];renderFavorites();})
+    .then(function(a){favorites=a||[];renderFavorites();updateFavStar();})
     .catch(function(){});
+}
+
+/* Update the bubble star icon: solid if current position is already a favorite */
+function updateFavStar(){
+  var icon=$id('bubble-fav-icon');
+  if(!icon)return;
+  var isFav=favorites.some(function(f){
+    var dlat=f.latitude-WGS.lat;
+    var dlng=f.longitude-WGS.lng;
+    // ~100m tolerance (1e-3 deg ≈ 111m)
+    return Math.sqrt(dlat*dlat+dlng*dlng)<0.001;
+  });
+  icon.setAttribute('fill', isFav ? 'currentColor' : 'none');
 }
 
 function renderFavorites(){
@@ -1347,6 +1361,19 @@ $id('modal-name').addEventListener('keydown',function(e){if(e.key==='Enter')save
 function saveFavorite(){
   var name=$id('modal-name').value.trim()||'未命名';
   var altVal=$id('inp-alt').value?parseFloat($id('inp-alt').value):altitude;
+
+  // 去重：已有相同坐标（100m 以内）则不重复收藏
+  var duplicate=favorites.some(function(f){
+    var dlat=f.latitude-WGS.lat;
+    var dlng=f.longitude-WGS.lng;
+    return Math.sqrt(dlat*dlat+dlng*dlng)<0.001;
+  });
+  if(duplicate){
+    $id('modal-backdrop').classList.remove('open');
+    toast('该位置已在收藏夹中');
+    return;
+  }
+
   var payload={
     name:name,latitude:WGS.lat,longitude:WGS.lng,
     altitude:altVal||null,
@@ -1362,6 +1389,7 @@ function saveFavorite(){
       $id('modal-backdrop').classList.remove('open');
       loadFavorites();
       toast('已加入收藏');
+      updateFavStar();
     }).catch(function(){toast('收藏失败');});
 }
 
